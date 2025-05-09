@@ -182,9 +182,6 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Wish Adventure Nepal. All rights
             reserved.
           </p>
-          <p className="mt-2 text-sm">
-            Designed with ❤️ for adventure enthusiasts
-          </p>
         </div>
       </div>
     </footer>

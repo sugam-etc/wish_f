@@ -53,7 +53,7 @@ export default function AdventureDetail() {
         <div className="grid md:grid-cols-2 gap-8">
           <div>
             <img
-              src={`${BACKEND_URL}${adventure.image}`}
+              src={`${adventure.image}`}
               alt={adventure.name}
               className="w-full h-auto rounded-lg shadow-lg"
             />

@@ -1,8 +1,8 @@
 // src/components/BlogAdminPanel.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/blogs"; // Change port if needed
+import { BACKEND_URL } from "../App";
+// Change port if needed
 
 const BlogAdminPanel = () => {
   const [blogs, setBlogs] = useState([]);
@@ -15,7 +15,7 @@ const BlogAdminPanel = () => {
     content: "",
   });
   const [imageFile, setImageFile] = useState(null);
-
+  const API_URL = `${BACKEND_URL}/api/blogs`;
   // Fetch blogs on load
   useEffect(() => {
     fetchBlogs();

@@ -1,12 +1,12 @@
+import { FaClock, FaMapMarkerAlt, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { FaMapMarkerAlt, FaClock, FaStar } from "react-icons/fa";
-import { BACKEND_URL } from "../App";
+
 export default function AdventureCard({ adventure }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 hover:shadow-lg">
       <div className="h-48 overflow-hidden">
         <img
-          src={`${BACKEND_URL}${adventure.image}`}
+          src={adventure.image} // Make sure adventure.image is a complete URL or formatted correctly
           alt={adventure.name}
           className="w-full h-full object-cover"
         />
@@ -32,7 +32,7 @@ export default function AdventureCard({ adventure }) {
         </div>
 
         <Link
-          to={`/adventures/${adventure._id}`} // Fix: Use _id instead of id
+          to={`/adventures/${adventure._id}`}
           className="inline-block px-4 py-2 bg-amber-500 hover:bg-amber-600 text-gray-900 font-medium rounded transition"
         >
           Learn More

@@ -7,8 +7,6 @@ import {
 import { FiExternalLink } from "react-icons/fi";
 
 const DashboardList = ({ title, data, onDelete, type }) => {
-  const backendURL = "http://localhost:5000";
-
   return (
     <div className="mt-10">
       <h3 className="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">
@@ -27,9 +25,20 @@ const DashboardList = ({ title, data, onDelete, type }) => {
               className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
             >
               <div className="flex items-start gap-4 w-full md:w-auto">
-                {item.image ? (
+                {type === "blog" && item.images && item.images.length > 0 ? (
                   <img
-                    src={`${backendURL}${item.image}`}
+                    src={item.images[0]} // Show the first image for blogs
+                    alt={item.title}
+                    className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none' stroke='%23e5e7eb'%3E%3Crect width='80' height='80' rx='8' fill='%23f9fafb'/%3E%3Cpath d='M30 25L25 30M50 55L55 50M25 55L20 50V30L25 25H55L60 30V50L55 55H25Z' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M40 45C42.7614 45 45 42.7614 45 40C45 37.2386 42.7614 35 40 35C37.2386 35 35 37.2386 35 40C35 42.7614 37.2386 45 40 45Z' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
+                    }}
+                  />
+                ) : item.image ? (
+                  <img
+                    src={item.image} // For event/adventure types, use the single image
                     alt={item.title}
                     className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
                     onError={(e) => {

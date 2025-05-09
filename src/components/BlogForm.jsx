@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { BACKEND_URL } from "../App";
 export const BlogForm = ({ refreshBlogs }) => {
   const [formData, setFormData] = useState({
     title: "",
@@ -13,8 +13,6 @@ export const BlogForm = ({ refreshBlogs }) => {
   const [images, setImages] = useState([]); // Changed to an array for multiple images
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const backendURL = "http://localhost:5000";
 
   // Toast component for notifications
   const Toast = ({ message, type, onClose }) => (
@@ -89,7 +87,7 @@ export const BlogForm = ({ refreshBlogs }) => {
 
     try {
       const response = await axios.post(
-        `${backendURL}/api/blogs`,
+        `${BACKEND_URL}/api/blogs`,
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },

@@ -14,7 +14,7 @@ import { ActivityCategoryFilter } from "../BlogComponents/ActivityFilter";
 
 // Activity Detail Popup
 import { ActivityPopup } from "../BlogComponents/ActivityPopup";
-
+import { BACKEND_URL } from "../App";
 const AdventureBlogPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,7 +26,7 @@ const AdventureBlogPage = () => {
     const fetchActivities = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:5000/api/blogs");
+        const response = await axios.get(`${BACKEND_URL}/api/blogs`);
         setActivities(response.data);
       } catch (error) {
         console.error("Error fetching activities:", error);

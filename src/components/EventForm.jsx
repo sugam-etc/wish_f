@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-
+import { BACKEND_URL } from "../App";
 // Enhanced Toast component with animations and icons
 const Toast = ({ message, type, onClose }) => (
   <div
@@ -63,8 +63,6 @@ export const EventForm = ({ refreshEvents }) => {
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const backendURL = "http://localhost:5000";
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -110,7 +108,7 @@ export const EventForm = ({ refreshEvents }) => {
 
     try {
       const response = await axios.post(
-        `${backendURL}/api/events`,
+        `${BACKEND_URL}/api/events`,
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },

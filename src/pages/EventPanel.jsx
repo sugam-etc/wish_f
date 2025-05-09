@@ -1,8 +1,7 @@
 // src/components/EventsAdminPanel.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/events";
+import { BACKEND_URL } from "../App";
 
 const EventsAdminPanel = () => {
   const [events, setEvents] = useState([]);
@@ -15,7 +14,7 @@ const EventsAdminPanel = () => {
     url: "",
   });
   const [imageFile, setImageFile] = useState(null);
-
+  const API_URL = `${BACKEND_URL}/api/events`;
   useEffect(() => {
     fetchEvents();
   }, []);

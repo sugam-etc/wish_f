@@ -159,7 +159,7 @@ export default function Home() {
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full">
                       <div className="h-48 overflow-hidden">
                         <img
-                          src={`${BACKEND_URL}${event.image}`} // ← THIS PREPENDS http://localhost:5000
+                          src={`${event.image}`} // ← THIS PREPENDS http://localhost:5000
                           alt={event.title}
                           className="w-full h-48 object-cover rounded mb-4"
                         />
@@ -284,7 +284,7 @@ export default function Home() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Message from Our Team</h2>
+            <h2 className="text-3xl font-bold mb-4"> Our Team</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our certified instructors are passionate about sharing their
               climbing knowledge

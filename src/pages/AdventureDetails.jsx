@@ -10,9 +10,7 @@ export default function AdventureDetails() {
   useEffect(() => {
     async function fetchAdventure() {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/adventures/${id}`
-        );
+        const res = await axios.get(`${BACKEND_URL}/api/adventures/${id}`);
         setAdventure(res.data);
         setLoading(false);
       } catch (err) {
@@ -39,7 +37,7 @@ export default function AdventureDetails() {
   return (
     <div className="max-w-4xl mx-auto p-8">
       <img
-        src={`${BACKEND_URL}${adventure.image}`}
+        src={`${adventure.image}`}
         alt={adventure.name}
         className="w-full h-80 object-cover rounded-lg mb-6"
       />

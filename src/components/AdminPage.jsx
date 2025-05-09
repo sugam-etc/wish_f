@@ -4,7 +4,7 @@ import { BlogForm } from "./BlogForm";
 import { AdventureForm } from "./AdventureForm";
 import { EventForm } from "./EventForm";
 import DashboardList from "./DashboardList";
-
+import { BACKEND_URL } from "../App";
 const AdminPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [adventures, setAdventures] = useState([]);
@@ -13,7 +13,7 @@ const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("forms"); // 'forms' or 'lists'
   const [isLoading, setIsLoading] = useState(true);
 
-  const backendURL = "http://localhost:5000";
+  // const BACKEND_URL = "http://localhost:5000";
 
   // Toast component
   const Toast = ({ message, type, onClose }) => (
@@ -37,9 +37,9 @@ const AdminPage = () => {
     try {
       const [blogsResponse, adventuresResponse, eventsResponse] =
         await Promise.all([
-          axios.get(`${backendURL}/api/blogs`),
-          axios.get(`${backendURL}/api/adventures`),
-          axios.get(`${backendURL}/api/events`),
+          axios.get(`${BACKEND_URL}/api/blogs`),
+          axios.get(`${BACKEND_URL}/api/adventures`),
+          axios.get(`${BACKEND_URL}/api/events`),
         ]);
 
       setBlogs(blogsResponse.data);
@@ -61,7 +61,7 @@ const AdminPage = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      await axios.delete(`${backendURL}/api/${type}s/${id}`);
+      await axios.delete(`${BACKEND_URL}/api/${type}s/${id}`);
 
       if (type === "blog") {
         setBlogs(blogs.filter((blog) => blog._id !== id));
@@ -200,7 +200,7 @@ const AdminPage = () => {
       </div>
 
       {/* Add some animations to the page */}
-      <style jsx global>{`
+      {/* <style jsx global>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -214,7 +214,7 @@ const AdminPage = () => {
         .animate-fade-in {
           animation: fadeIn 0.3s ease-out forwards;
         }
-      `}</style>
+      `}</style> */}
     </div>
   );
 };
