@@ -6,12 +6,9 @@ import AdventureDetail from "./pages/AdventureDetail.jsx";
 import Footer from "./components/Footer.jsx";
 import Navbar from "./components/Navbar.jsx";
 import BlogPage from "./pages/BlogPage.jsx";
-import BlogAdminPanel from "./pages/BlogPanel.jsx";
 import { AuthProvider } from "../Authentication/AuthContext.jsx";
-import PrivateRoute from "../Authentication/PrivateRoute.jsx";
-import Login from "../Authentication/Login.jsx";
+
 import AdminPage from "./components/AdminPage.jsx";
-import AdventureDetails from "./pages/AdventureDetails.jsx";
 import ProtectedRoute from "./Authentication/ProtectedRoute.jsx";
 import LoginPage from "./Authentication/LoginPage.jsx";
 export const BACKEND_URL = "https://wish-backend-2z6u.onrender.com";
@@ -30,7 +27,7 @@ function App() {
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/adventures/:id" element={<AdventureDetail />} />
             {/* <Route path="/admin" element={<AdminPage />} /> */}
-            <Route path="/adventures/:id" element={<AdventureDetails />} />{" "}
+
             {/* ✅ NEW */}
             <Route path="/login" element={<LoginPage />} />
             <Route
