@@ -17,9 +17,7 @@ export default function AdventureDetail() {
   useEffect(() => {
     async function fetchAdventure() {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/adventures/${id}`
-        );
+        const res = await axios.get(`${BACKEND_URL}/api/adventures/${id}`);
         setAdventure(res.data);
         setLoading(false);
       } catch (err) {
