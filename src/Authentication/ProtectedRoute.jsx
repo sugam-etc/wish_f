@@ -1,8 +1,13 @@
 // src/ProtectedRoute.jsx
-import { Navigate } from "react-router-dom";
-import { isAuthenticated } from "./Auth";
+import { Navigate, useLocation } from "react-router-dom";
+
 const ProtectedRoute = ({ children }) => {
-  if (!isAuthenticated()) {
+  const location = useLocation();
+
+  // Check if route state contains isAuthenticated
+  const isAuthenticated = location.state?.isAuthenticated;
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

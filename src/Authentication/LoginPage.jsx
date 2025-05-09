@@ -1,7 +1,7 @@
 // src/LoginPage.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "./Auth";
+import { validateCredentials } from "./Auth";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -12,9 +12,8 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const success = login(username, password);
-    if (success) {
-      navigate("/admin");
+    if (validateCredentials(username, password)) {
+      navigate("/admin", { state: { isAuthenticated: true } }); // ✅ Pass auth state
     } else {
       setError("Invalid credentials. Try admin / password123");
     }
