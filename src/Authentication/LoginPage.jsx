@@ -1,4 +1,5 @@
-// src/LoginPage.jsx
+// src/Authentication/LoginPage.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateCredentials } from "./Auth";
@@ -13,7 +14,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     if (validateCredentials(username, password)) {
-      navigate("/admin", { state: { isAuthenticated: true } }); // ✅ Pass auth state
+      navigate("/admin?auth=1");
     } else {
       setError("Invalid credentials. Try admin / password123");
     }
