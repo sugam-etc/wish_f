@@ -1,0 +1,15 @@
+@import "tailwindcss";
+::-webkit-scrollbar {
+  display: none;
+}
+.header {
+  @apply fixed w-full z-50 transition-all duration-300;
+  height: 80px; /* adjust to match your header’s actual height */
+}
+
+* {
+  font-family: "Raleway", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
