@@ -14,7 +14,7 @@ import AdminPage from "./components/AdminPage.jsx";
 import AdventureDetails from "./pages/AdventureDetails.jsx";
 import ProtectedRoute from "./Authentication/ProtectedRoute.jsx";
 import LoginPage from "./Authentication/LoginPage.jsx";
-export const BACKEND_URL = "http://localhost:5000";
+export const BACKEND_URL = "https://wish-backend-2z6u.onrender.com";
 function App() {
   return (
     <AuthProvider>

@@ -41,7 +41,6 @@ const AdminPage = () => {
           axios.get(`${BACKEND_URL}/api/adventures`),
           axios.get(`${BACKEND_URL}/api/events`),
         ]);
-
       setBlogs(blogsResponse.data);
       setAdventures(adventuresResponse.data);
       setEvents(eventsResponse.data);
