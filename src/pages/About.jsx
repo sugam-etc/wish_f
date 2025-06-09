@@ -1,5 +1,5 @@
 import { FaMountain, FaMedal, FaUsers, FaChartLine } from "react-icons/fa";
-import img1 from "../assets/BackgroundImages/img1.jpg";
+import img1 from "../assets/Images/img1.jpg";
 import img2 from "../assets/BackgroundImages/img2.jpg";
 import img3 from "../assets/BackgroundImages/img3.jpg";
 import img4 from "../assets/BackgroundImages/img4.jpg";
@@ -19,7 +19,7 @@ export default function About() {
       <section className="relative bg-gray-900 text-white h-96 flex items-center justify-center">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            src={img1}
             alt="Climbing team"
             className="w-full h-full object-cover"
           />
@@ -41,7 +41,7 @@ export default function About() {
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="lg:w-1/2">
               <img
-                src="https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                src={img1}
                 alt="Our humble beginnings"
                 className="rounded-xl shadow-lg w-full"
               />
@@ -357,7 +357,7 @@ export default function About() {
               All climbers must complete our waiver form before participating.
             </p>
             <a
-              href="/waiver-form.pdf"
+              href="/waiverform.pdf"
               download
               className="inline-flex items-center justify-center bg-amber-500 text-white font-semibold py-3 px-6 rounded-full shadow hover:bg-amber-600 transition"
             >

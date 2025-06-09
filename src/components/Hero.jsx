@@ -172,7 +172,7 @@ export default function Hero() {
             </div>
             <div className="flex items-center text-lg">
               <FaPhone className="text-amber-400 mr-3 text-xl" />
-              <span>+977 9863539501</span>
+              <span>+977 9823470214</span>
             </div>
           </motion.div>
 

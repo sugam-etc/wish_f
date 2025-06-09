@@ -2,18 +2,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import outdoor from "../assets/Images/outdoor.jpeg";
 import bouldering from "../assets/Images/bouldering.jpg";
+import multipitch from "../assets/Images/multipitch.jpg";
+import toperope from "../assets/Images/toprope.jpg";
 import slack from "../assets/Images/stacklining.jpg";
 const ServiceModal = ({ service, onClose }) => {
   const serviceImages = {
     "Indoor Bouldering": bouldering,
-    "Top Rope Climbing":
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    "Top Rope Climbing": toperope,
     "Outdoor Rock Climbing": outdoor,
-    "Multi-pitch Climbing":
-      "https://images.unsplash.com/photo-1580655653888-2a8e9b0c81b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    "Multi-pitch Climbing": multipitch,
     Slacklining: slack,
     "Climbing Camps":
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      "https://images.squarespace-cdn.com/content/v1/63e5726a64ff2b111e3fc2af/eb1dadbc-5345-492c-ba37-5d2de76597d0/TeenCamp09.jpg",
   };
 
   return (

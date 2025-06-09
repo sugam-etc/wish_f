@@ -16,7 +16,7 @@ const LoginPage = () => {
     if (validateCredentials(username, password)) {
       navigate("/admin?auth=1");
     } else {
-      setError("Invalid credentials. Try admin / password123");
+      setError("Invalid credentials. Try again.");
     }
   };
 

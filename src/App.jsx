@@ -11,7 +11,7 @@ import { AuthProvider } from "../Authentication/AuthContext.jsx";
 import AdminPage from "./components/AdminPage.jsx";
 import ProtectedRoute from "./Authentication/ProtectedRoute.jsx";
 import LoginPage from "./Authentication/LoginPage.jsx";
-export const BACKEND_URL = "https://wish-backend-2z6u.onrender.com";
+export const BACKEND_URL = "https://wishadventurenepal.com";
 function App() {
   return (
     <AuthProvider>
