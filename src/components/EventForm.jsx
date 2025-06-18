@@ -1,6 +1,9 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../App";
+import { BACKEND_URL } from "../config/backend";
+import { useParams, useNavigate } from "react-router-dom";
+import { formatDateForInput } from "../utils/dateUtils";
+
 // Enhanced Toast component with animations and icons
 const Toast = ({ message, type, onClose }) => (
   <div
@@ -51,6 +54,9 @@ const Toast = ({ message, type, onClose }) => (
 );
 
 export const EventForm = ({ refreshEvents }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -60,14 +66,64 @@ export const EventForm = ({ refreshEvents }) => {
     url: "",
   });
   const [image, setImage] = useState(null);
+  const [existingImage, setExistingImage] = useState(null);
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load event if in edit mode
+  useEffect(() => {
+    if (id) {
+      const fetchEvent = async () => {
+        try {
+          const response = await axios.get(`${BACKEND_URL}/api/events/${id}`);
+          const eventData = response.data;
+
+          setFormData({
+            ...eventData,
+            date: formatDateForInput(eventData.date),
+          });
+
+          if (eventData.image) {
+            setExistingImage(`${BACKEND_URL}${eventData.image}`);
+          }
+          setIsEditMode(true);
+        } catch (error) {
+          showToast(
+            `Error: ${error.response?.data?.error || error.message}`,
+            "error"
+          );
+        }
+      };
+      fetchEvent();
+    }
+  }, [id]);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const removeImage = () => {
+    setImage(null);
+  };
+
+  const removeExistingImage = () => {
+    setExistingImage(null);
+    setFormData((prev) => ({
+      ...prev,
+      image: null,
     }));
   };
 
@@ -86,20 +142,22 @@ export const EventForm = ({ refreshEvents }) => {
     ];
     const missingField = requiredFields.find((field) => !formData[field]);
 
-    if (missingField || !image) {
-      setToast({
-        message: `Please fill out all required fields${
-          !image ? " and select an image" : ""
-        }.`,
-        type: "error",
-      });
+    if (missingField || (!image && !existingImage && !isEditMode)) {
+      showToast(
+        `Please fill out all required fields${
+          !image && !existingImage ? " and select an image" : ""
+        }`,
+        "error"
+      );
       setIsSubmitting(false);
       return;
     }
 
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      formDataToSend.append(key, value);
+      if (value !== null && value !== undefined) {
+        formDataToSend.append(key, value);
+      }
     });
 
     if (image) {
@@ -107,41 +165,48 @@ export const EventForm = ({ refreshEvents }) => {
     }
 
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/events`,
-        formDataToSend,
-        {
+      if (isEditMode) {
+        await axios.put(`${BACKEND_URL}/api/events/${id}`, formDataToSend, {
           headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      resetForm();
-      setToast({
-        message: "Event created successfully!",
-        type: "success",
-      });
-      refreshEvents((prev) => [...prev, response.data]);
+        });
+        showToast("Event updated successfully!");
+        navigate("/"); // or wherever you want to redirect
+      } else {
+        const response = await axios.post(
+          `${BACKEND_URL}/api/events`,
+          formDataToSend,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        showToast("Event created successfully!");
+        resetForm(); // Clear the form for new entries
+      }
+      refreshEvents && refreshEvents();
     } catch (error) {
-      console.error("Error adding event:", error);
-      setToast({
-        message: `Error: ${error.response?.data?.error || error.message}`,
-        type: "error",
-      });
+      console.error("Error saving event:", error);
+      showToast(
+        `Error: ${error.response?.data?.error || error.message}`,
+        "error"
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const resetForm = () => {
-    setFormData({
-      title: "",
-      date: "",
-      location: "",
-      time: "",
-      description: "",
-      url: "",
-    });
-    setImage(null);
+    if (!isEditMode) {
+      setFormData({
+        title: "",
+        date: "",
+        location: "",
+        time: "",
+        description: "",
+        url: "",
+      });
+      setImage(null);
+      setExistingImage(null);
+    }
   };
 
   const closeToast = () => setToast(null);
@@ -149,7 +214,7 @@ export const EventForm = ({ refreshEvents }) => {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">
-        Create New Event
+        {isEditMode ? "Edit Event" : "Create New Event"}
       </h2>
 
       {toast && <Toast {...toast} onClose={closeToast} />}
@@ -236,7 +301,7 @@ export const EventForm = ({ refreshEvents }) => {
             Event URL*
           </label>
           <input
-            type="url"
+            type="text"
             name="url"
             value={formData.url}
             onChange={handleChange}
@@ -248,7 +313,7 @@ export const EventForm = ({ refreshEvents }) => {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Event Image*
+            Event Image{!isEditMode && "*"}
           </label>
           <div className="flex items-center space-x-4">
             <label className="flex flex-col items-center px-4 py-6 bg-white text-blue-500 rounded-lg border border-dashed border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors">
@@ -270,20 +335,40 @@ export const EventForm = ({ refreshEvents }) => {
               </span>
               <input
                 type="file"
-                onChange={(e) => setImage(e.target.files[0])}
+                onChange={handleImageChange}
                 className="hidden"
                 accept="image/*"
-                required
+                required={!isEditMode && !existingImage}
               />
             </label>
-            {image && (
+            {(image || existingImage) && (
               <button
                 type="button"
-                onClick={() => setImage(null)}
+                onClick={existingImage ? removeExistingImage : removeImage}
                 className="text-red-500 hover:text-red-700 text-sm font-medium"
               >
                 Remove
               </button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {existingImage && (
+              <div className="relative">
+                <img
+                  src={existingImage}
+                  alt="Existing event"
+                  className="h-20 w-20 object-cover rounded-lg"
+                />
+              </div>
+            )}
+            {image && (
+              <div className="relative">
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt="New event"
+                  className="h-20 w-20 object-cover rounded-lg"
+                />
+              </div>
             )}
           </div>
         </div>
@@ -326,8 +411,10 @@ export const EventForm = ({ refreshEvents }) => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Creating...
+                {isEditMode ? "Updating..." : "Creating..."}
               </>
+            ) : isEditMode ? (
+              "Update Event"
             ) : (
               "Create Event"
             )}

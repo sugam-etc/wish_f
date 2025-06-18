@@ -1,56 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../App";
-// Enhanced Toast component
-const Toast = ({ message, type, onClose }) => (
-  <div
-    className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-xl text-white flex items-center justify-between min-w-[300px] transform transition-all duration-300 ${
-      type === "success" ? "bg-emerald-500" : "bg-rose-500"
-    }`}
-  >
-    <div className="flex items-center">
-      {type === "success" ? (
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      )}
-      {message}
-    </div>
-    <button
-      onClick={onClose}
-      className="ml-4 font-bold hover:opacity-80 transition-opacity"
-      aria-label="Close notification"
-    >
-      &times;
-    </button>
-  </div>
-);
+import { BACKEND_URL } from "../config/backend";
+import { useParams, useNavigate } from "react-router-dom";
 
-export const AdventureForm = ({ refreshAdventures }) => {
+const AdventureForm = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     type: "",
@@ -65,37 +21,73 @@ export const AdventureForm = ({ refreshAdventures }) => {
       website: "",
     },
     rating: 0,
+    about: "",
   });
   const [image, setImage] = useState(null);
+  const [existingImage, setExistingImage] = useState("");
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // const backendURL = "http://localhost:5000";
+  // Load adventure if in edit mode
+  useEffect(() => {
+    if (id) {
+      const fetchAdventure = async () => {
+        try {
+          const response = await axios.get(
+            `${BACKEND_URL}/api/adventures/${id}`
+          );
+          setFormData(response.data);
+          if (response.data.image) {
+            setExistingImage(`${BACKEND_URL}${response.data.image}`);
+          }
+          setIsEditMode(true);
+        } catch (error) {
+          showToast(
+            `Error: ${error.response?.data?.error || error.message}`,
+            "error"
+          );
+        }
+      };
+      fetchAdventure();
+    }
+  }, [id]);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleContactChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      contact: {
-        ...prev.contact,
-        [name]: value,
-      },
+      contact: { ...prev.contact, [name]: value },
     }));
   };
 
   const handleRatingChange = (newRating) => {
-    setFormData((prev) => ({
-      ...prev,
-      rating: newRating,
-    }));
+    setFormData((prev) => ({ ...prev, rating: newRating }));
+  };
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      type: "",
+      shortDescription: "",
+      location: "",
+      duration: "",
+      priceRange: "",
+      hours: "",
+      contact: { phone: "", email: "", website: "" },
+      rating: 0,
+      about: "",
+    });
+    setImage(null);
+    setExistingImage("");
   };
 
   const handleSubmit = async (e) => {
@@ -114,89 +106,113 @@ export const AdventureForm = ({ refreshAdventures }) => {
     ];
     const missingField = requiredFields.find((field) => !formData[field]);
 
-    if (missingField || !image) {
-      setToast({
-        message: `Please fill out all required fields${
-          !image ? " and select an image" : ""
-        }.`,
-        type: "error",
-      });
+    if (missingField || (!image && !existingImage && !isEditMode)) {
+      showToast(
+        `Please fill out all required fields${
+          !image && !existingImage ? " and select an image" : ""
+        }`,
+        "error"
+      );
       setIsSubmitting(false);
       return;
     }
 
     const formDataToSend = new FormData();
+
+    // Append all simple fields
     Object.entries(formData).forEach(([key, value]) => {
-      if (key === "contact") {
-        Object.entries(value).forEach(([contactKey, contactValue]) => {
-          formDataToSend.append(`contact[${contactKey}]`, contactValue);
-        });
-      } else {
+      if (key !== "contact" && key !== "image") {
         formDataToSend.append(key, value);
       }
     });
 
-    if (image) {
-      formDataToSend.append("image", image);
-    }
+    // Append contact as JSON string
+    formDataToSend.append("contact", JSON.stringify(formData.contact));
+
+    if (image) formDataToSend.append("image", image);
 
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/adventures`,
-        formDataToSend,
-        {
+      if (isEditMode) {
+        await axios.put(`${BACKEND_URL}/api/adventures/${id}`, formDataToSend, {
           headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      resetForm();
-      setToast({
-        message: "Adventure created successfully!",
-        type: "success",
-      });
-      refreshAdventures((prev) => [...prev, response.data]);
+        });
+        showToast("Adventure updated successfully!");
+        // For edit mode, you might want to navigate away or refresh the data
+        navigate("/adventures"); // or wherever you want to redirect
+      } else {
+        await axios.post(`${BACKEND_URL}/api/adventures`, formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        showToast("Adventure created successfully!");
+        resetForm(); // Clear the form for new entries
+      }
     } catch (error) {
-      console.error("Error adding adventure:", error);
-      setToast({
-        message: `Error: ${error.response?.data?.error || error.message}`,
-        type: "error",
-      });
+      console.error("Error saving adventure:", error);
+      showToast(
+        `Error: ${error.response?.data?.error || error.message}`,
+        "error"
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      type: "",
-      shortDescription: "",
-      location: "",
-      duration: "",
-      priceRange: "",
-      hours: "",
-      contact: {
-        phone: "",
-        email: "",
-        website: "",
-      },
-      rating: 0,
-    });
-    setImage(null);
-  };
-
-  const closeToast = () => setToast(null);
-
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">
-        Create New Adventure
+        {isEditMode ? "Edit Adventure" : "Create New Adventure"}
       </h2>
 
-      {toast && <Toast {...toast} onClose={closeToast} />}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-xl text-white flex items-center justify-between min-w-[300px] ${
+            toast.type === "success" ? "bg-emerald-500" : "bg-rose-500"
+          }`}
+        >
+          <div className="flex items-center">
+            {toast.type === "success" ? (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            )}
+            {toast.message}
+          </div>
+          <button
+            onClick={() => setToast(null)}
+            className="ml-4 font-bold hover:opacity-80"
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Name */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Adventure Name*
@@ -212,6 +228,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
             />
           </div>
 
+          {/* Type */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Type*
@@ -227,6 +244,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
             />
           </div>
 
+          {/* Location */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Location*
@@ -242,6 +260,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
             />
           </div>
 
+          {/* Duration */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Duration*
@@ -257,6 +276,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
             />
           </div>
 
+          {/* Price Range */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Price Range*
@@ -272,6 +292,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
             />
           </div>
 
+          {/* Hours */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Operating Hours*
@@ -288,6 +309,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
           </div>
         </div>
 
+        {/* Short Description */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
             Short Description*
@@ -303,6 +325,22 @@ export const AdventureForm = ({ refreshAdventures }) => {
           />
         </div>
 
+        {/* About */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            About this adventure
+          </label>
+          <textarea
+            name="about"
+            value={formData.about}
+            onChange={handleChange}
+            placeholder="Detailed description of the adventure"
+            rows="6"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* Contact Information */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-gray-800">
             Contact Information
@@ -339,7 +377,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
                 Website
               </label>
               <input
-                type="url"
+                type="text"
                 name="website"
                 value={formData.contact.website}
                 onChange={handleContactChange}
@@ -350,6 +388,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
           </div>
         </div>
 
+        {/* Rating */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
             Rating
@@ -372,9 +411,10 @@ export const AdventureForm = ({ refreshAdventures }) => {
           </div>
         </div>
 
+        {/* Image Upload */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Featured Image*
+            Featured Image{!isEditMode && "*"}
           </label>
           <div className="flex items-center space-x-4">
             <label className="flex flex-col items-center px-4 py-6 bg-white text-blue-500 rounded-lg border border-dashed border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors">
@@ -399,13 +439,37 @@ export const AdventureForm = ({ refreshAdventures }) => {
                 onChange={(e) => setImage(e.target.files[0])}
                 className="hidden"
                 accept="image/*"
-                required
+                required={!isEditMode}
               />
             </label>
-            {image && (
+            {existingImage && !image && (
+              <div className="relative">
+                <img
+                  src={existingImage}
+                  alt="Current adventure"
+                  className="h-20 w-20 object-cover rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExistingImage("");
+                    setFormData((prev) => ({ ...prev, image: "" }));
+                  }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {(image || existingImage) && (
               <button
                 type="button"
-                onClick={() => setImage(null)}
+                onClick={() => {
+                  setImage(null);
+                  if (isEditMode) {
+                    setExistingImage("");
+                  }
+                }}
                 className="text-red-500 hover:text-red-700 text-sm font-medium"
               >
                 Remove
@@ -414,6 +478,7 @@ export const AdventureForm = ({ refreshAdventures }) => {
           </div>
         </div>
 
+        {/* Form Actions */}
         <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
           <button
             type="button"
@@ -452,8 +517,10 @@ export const AdventureForm = ({ refreshAdventures }) => {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Creating...
+                {isEditMode ? "Updating..." : "Creating..."}
               </>
+            ) : isEditMode ? (
+              "Update Adventure"
             ) : (
               "Create Adventure"
             )}
@@ -463,3 +530,5 @@ export const AdventureForm = ({ refreshAdventures }) => {
     </div>
   );
 };
+
+export default AdventureForm;

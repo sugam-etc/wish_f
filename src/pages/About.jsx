@@ -1,4 +1,10 @@
-import { FaMountain, FaMedal, FaUsers, FaChartLine } from "react-icons/fa";
+import {
+  FaMountain,
+  FaMedal,
+  FaUsers,
+  FaChartLine,
+  FaArrowRight,
+} from "react-icons/fa";
 import img1 from "../assets/Images/img1.jpg";
 import img2 from "../assets/BackgroundImages/img2.jpg";
 import img3 from "../assets/BackgroundImages/img3.jpg";
@@ -11,8 +17,12 @@ import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { useEffect } from "react";
 
 export default function About() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="pb-16">
       {/* Hero Section */}
@@ -30,7 +40,7 @@ export default function About() {
             About West Indoor Sport Hub
           </h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto">
-            Nepal's premier climbing destination since 2015
+            Nepal's premier climbing destination since 2021
           </p>
         </div>
       </section>
@@ -253,7 +263,7 @@ export default function About() {
                     <span className="text-4xl font-bold text-gray-900">
                       Rs. 100
                     </span>
-                    <span className="text-gray-600"> / 3 visits</span>
+                    <span className="text-gray-600"> / 3 times</span>
                   </div>
                   {/* <ul className="space-y-3 mb-6">
                     <li className="flex items-center">
@@ -381,40 +391,73 @@ export default function About() {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Our Facility</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+      <section className="py-8 md:py-16 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
+              Our Facility
+            </h2>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-4">
               A look inside Nepal's premier climbing gym
             </p>
           </div>
 
-          <Swiper
-            modules={[Pagination, Navigation]}
-            spaceBetween={20}
-            slidesPerView={1}
-            navigation
-            pagination={{ clickable: true }}
-            breakpoints={{
-              640: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 },
-              1280: { slidesPerView: 4 },
-            }}
-            className="pb-10"
-          >
-            {[img2, img3, img4, img5, img6, img7].map((img, index) => (
-              <SwiperSlide key={index}>
-                <div className="overflow-hidden rounded-xl shadow-lg">
-                  <img
-                    src={img}
-                    alt={`Facility ${index + 1}`}
-                    className="w-full h-48 md:h-64 object-cover hover:scale-105 transition-transform duration-500 ease-in-out"
-                  />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <div className="relative">
+            <Swiper
+              modules={[Pagination, Navigation]}
+              spaceBetween={16}
+              slidesPerView={1}
+              navigation={{
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+              }}
+              pagination={{
+                clickable: true,
+                el: ".swiper-pagination",
+                type: "bullets",
+              }}
+              breakpoints={{
+                480: { slidesPerView: 1.5 },
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 2.5 },
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+                1280: {
+                  slidesPerView: 4,
+                  spaceBetween: 28,
+                },
+              }}
+              className="pb-12"
+            >
+              {[img2, img3, img4, img5, img6, img7].map((img, index) => (
+                <SwiperSlide key={index}>
+                  <div className="overflow-hidden rounded-lg md:rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 h-full">
+                    <img
+                      src={img}
+                      alt={`Facility ${index + 1}`}
+                      className="w-full h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72 object-cover hover:scale-105 transition-transform duration-500 ease-in-out"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Custom navigation buttons */}
+            <div className="swiper-button-prev hidden md:flex after:text-amber-500 hover:after:text-amber-600 after:text-2xl"></div>
+            <div className="swiper-button-next hidden md:flex after:text-amber-500 hover:after:text-amber-600 after:text-2xl"></div>
+            <div className="swiper-pagination"></div>
+          </div>
+
+          <div className="text-center mt-6 md:mt-8">
+            <a
+              href="/gallery"
+              className="inline-flex items-center px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 bg-amber-500 hover:bg-amber-600 text-gray-900 font-medium rounded-md md:rounded-lg transition-all text-sm sm:text-base md:text-lg"
+            >
+              Our Gallery <FaArrowRight className="ml-1 sm:ml-2" />
+            </a>
+          </div>
         </div>
       </section>
     </div>

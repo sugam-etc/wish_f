@@ -28,7 +28,7 @@ import {
   FaHiking,
 } from "react-icons/fa";
 import { teamMembers, reviews } from "../assets/Data/ContentData.js";
-import { BACKEND_URL } from "../App.jsx";
+import { BACKEND_URL } from "../config/backend.js";
 
 // Services array
 const services = [
@@ -42,7 +42,7 @@ const services = [
     icon: <GiRopeCoil />,
     title: "Top Rope Climbing",
     description:
-      "Safe climbing experience with our auto-belay systems and instructor-led top rope sessions on 15m walls.",
+      "Safe climbing experience with our belay systems and instructor-led top rope sessions on 15m walls.",
   },
   {
     icon: <FaTree />,
@@ -159,7 +159,11 @@ export default function Home() {
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full">
                       <div className="h-48 overflow-hidden">
                         <img
-                          src={`${event.image}`} // ← THIS PREPENDS http://localhost:5000
+                          src={
+                            event.image.startsWith("http")
+                              ? event.image
+                              : `${BACKEND_URL}${event.image}`
+                          } // ← THIS PREPENDS http://localhost:5000
                           alt={event.title}
                           className="w-full h-48 object-cover rounded mb-4"
                         />

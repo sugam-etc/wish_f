@@ -1,8 +1,7 @@
 // src/components/EventsAdminPanel.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../App";
-
+import { BACKEND_URL } from "../config/backend";
 const EventsAdminPanel = () => {
   const [events, setEvents] = useState([]);
   const [formData, setFormData] = useState({

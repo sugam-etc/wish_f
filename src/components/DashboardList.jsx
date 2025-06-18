@@ -1,110 +1,178 @@
-import {
-  FaTrash,
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaImage,
-} from "react-icons/fa";
-import { FiExternalLink } from "react-icons/fi";
+import React from "react";
+import { Link } from "react-router-dom";
+import { BACKEND_URL } from "../config/backend";
 
-const DashboardList = ({ title, data, onDelete, type }) => {
+const DashboardList = ({ data = [], onDelete, type }) => {
+  const items = Array.isArray(data) ? data : [];
+
+  const getImageUrl = (item) => {
+    switch (type) {
+      case "blog":
+        return `${BACKEND_URL}${item.images[0]}` || null;
+      case "adventure":
+        return `${BACKEND_URL}${item.image}` || null;
+      case "event":
+        return `${BACKEND_URL}${item.image}` || null;
+      case "album":
+        if (typeof item.coverImage === "string") {
+          return `${BACKEND_URL}${item.coverImage.path}`;
+        } else if (item.coverImage?.url) {
+          return `${BACKEND_URL}${item.coverImage.path}`;
+        } else if (item.coverImage?.path) {
+          return `${BACKEND_URL}${item.coverImage.path}`;
+        } else if (item.images?.[0]?.path) {
+          return `${BACKEND_URL}${item.coverImage.path}`;
+        }
+        return null;
+      default:
+        return null;
+    }
+  };
+
+  const getEditLink = (id) => {
+    switch (type) {
+      case "blog":
+        return `/blogform/${id}`;
+      case "event":
+        return `/eventform/${id}`;
+      case "adventure":
+        return `/adventureform/${id}`;
+      case "info":
+        return `/admin`;
+      default:
+        return `/${type}form/${id}`;
+    }
+  };
+
   return (
-    <div className="mt-10">
-      <h3 className="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">
-        {title}
-      </h3>
-
-      {data.length === 0 ? (
-        <div className="bg-gray-50 p-6 rounded-lg text-center text-gray-500">
-          No items found. Add some to see them listed here.
-        </div>
-      ) : (
-        <ul className="space-y-4">
-          {data.map((item) => (
-            <li
-              key={item._id}
-              className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
-            >
-              <div className="flex items-start gap-4 w-full md:w-auto">
-                {type === "blog" && item.images && item.images.length > 0 ? (
-                  <img
-                    src={item.images[0]} // Show the first image for blogs
-                    alt={item.title}
-                    className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none' stroke='%23e5e7eb'%3E%3Crect width='80' height='80' rx='8' fill='%23f9fafb'/%3E%3Cpath d='M30 25L25 30M50 55L55 50M25 55L20 50V30L25 25H55L60 30V50L55 55H25Z' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M40 45C42.7614 45 45 42.7614 45 40C45 37.2386 42.7614 35 40 35C37.2386 35 35 37.2386 35 40C35 42.7614 37.2386 45 40 45Z' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
-                    }}
-                  />
-                ) : item.image ? (
-                  <img
-                    src={item.image} // For event/adventure types, use the single image
-                    alt={item.title}
-                    className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none' stroke='%23e5e7eb'%3E%3Crect width='80' height='80' rx='8' fill='%23f9fafb'/%3E%3Cpath d='M30 25L25 30M50 55L55 50M25 55L20 50V30L25 25H55L60 30V50L55 55H25Z' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M40 45C42.7614 45 45 42.7614 45 40C45 37.2386 42.7614 35 40 35C37.2386 35 35 37.2386 35 40C35 42.7614 37.2386 45 40 45Z' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
-                    }}
-                  />
-                ) : (
-                  <div className="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
-                    <FaImage size={24} />
+    <div className="overflow-x-auto">
+      {/* Mobile view (cards) */}
+      <div className="md:hidden space-y-4">
+        {items.length > 0 ? (
+          items.map((item) => {
+            const imageUrl = getImageUrl(item);
+            return (
+              <div key={item._id} className="bg-white p-4 rounded-lg shadow">
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 h-12 w-12">
+                    {imageUrl ? (
+                      <img
+                        className="h-12 w-12 rounded-full object-cover"
+                        src={imageUrl}
+                        alt={item.title || item.name || "Untitled"}
+                      />
+                    ) : (
+                      <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500 text-xs">No Image</span>
+                      </div>
+                    )}
                   </div>
-                )}
-
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-lg font-semibold text-gray-800 truncate">
-                    {item.title}
-                  </h4>
-                  <p className="text-gray-600 mt-1 text-sm line-clamp-2">
-                    {item.excerpt || item.shortDescription || item.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-3 mt-2 text-sm text-gray-500">
-                    {type === "event" && (
-                      <span className="flex items-center gap-1">
-                        <FaCalendarAlt className="text-gray-400" />
-                        {new Date(item.date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    )}
-                    {type === "adventure" && item.location && (
-                      <span className="flex items-center gap-1">
-                        <FaMapMarkerAlt className="text-gray-400" />
-                        {item.location}
-                      </span>
-                    )}
-                    {item.url && (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-blue-500 hover:text-blue-600 transition-colors"
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {item.title || item.name || "Untitled"}
+                    </p>
+                  </div>
+                  <div className="flex space-x-4">
+                    {type !== "info" && (
+                      <Link
+                        to={getEditLink(item._id)}
+                        className="text-amber-600 hover:text-amber-900 text-sm"
                       >
-                        <FiExternalLink />
-                        Visit Link
-                      </a>
+                        Edit
+                      </Link>
                     )}
+                    <button
+                      onClick={() => onDelete(item._id, type)}
+                      className="text-red-600 hover:text-red-900 text-sm"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
+            );
+          })
+        ) : (
+          <div className="text-center p-4 text-sm text-gray-500">
+            No {type}s found
+          </div>
+        )}
+      </div>
 
-              <button
-                onClick={() => onDelete(item._id, type)}
-                className="mt-4 md:mt-0 flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 py-2 px-4 rounded-lg transition-colors duration-200 self-end md:self-auto"
-                aria-label={`Delete ${item.title}`}
+      {/* Desktop view (table) */}
+      <table className="hidden md:table min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+              Image
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Title
+            </th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {items.length > 0 ? (
+            items.map((item) => {
+              const imageUrl = getImageUrl(item);
+              return (
+                <tr key={item._id}>
+                  <td className="px-4 py-4 whitespace-nowrap w-16">
+                    <div className="flex-shrink-0 h-10 w-10">
+                      {imageUrl ? (
+                        <img
+                          className="h-10 w-10 rounded-full object-cover"
+                          src={imageUrl}
+                          alt={item.title || item.name || "Untitled"}
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500 text-xs">
+                            No Image
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {item.title || item.name || "Untitled"}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-right w-32">
+                    <div className="flex justify-end space-x-4">
+                      <Link
+                        to={getEditLink(item._id)}
+                        className="text-amber-600 hover:text-amber-900 text-sm"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => onDelete(item._id, type)}
+                        className="text-red-600 hover:text-red-900 text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td
+                colSpan="3"
+                className="px-6 py-4 text-center text-sm text-gray-500"
               >
-                <FaTrash />
-                <span className="hidden sm:inline">Delete</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+                No {type}s found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

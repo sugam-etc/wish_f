@@ -1,27 +1,63 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
-// Adventure-themed Button component
+import { useNavigate } from "react-router-dom";
 import { Button } from "../BlogComponents/Button";
-// Input with adventure styling
 import { Input } from "../BlogComponents/Input";
-
-// Adventure Activity Card
 import { AdventureCard } from "../BlogComponents/AdventureCard";
-
-// Activity Category Filter
 import { ActivityCategoryFilter } from "../BlogComponents/ActivityFilter";
+import { BACKEND_URL } from "../config/backend";
+import { createEmail } from "../api/emailService";
 
-// Activity Detail Popup
-import { ActivityPopup } from "../BlogComponents/ActivityPopup";
-import { BACKEND_URL } from "../App";
 const AdventureBlogPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedActivity, setSelectedActivity] = useState(null);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [loadingEmail, setLoadingEmail] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      setMessage({ text: "Please enter your email", type: "error" });
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setMessage({ text: "Please enter a valid email address", type: "error" });
+      return;
+    }
+
+    setLoading(true);
+    setMessage({ text: "", type: "" });
+
+    try {
+      await createEmail({ title: email });
+      setMessage({
+        text: "Thank you for subscribing!",
+        type: "success",
+      });
+      setEmail("");
+    } catch (error) {
+      setMessage({
+        text: error.message || "Subscription service is currently unavailable",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   useEffect(() => {
     const fetchActivities = async () => {
       setLoading(true);
@@ -53,14 +89,8 @@ const AdventureBlogPage = () => {
         activity.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-  const handleActivityClick = (activity) => {
-    setSelectedActivity(activity);
-    document.body.style.overflow = "hidden";
-  };
-
-  const handleClosePopup = () => {
-    setSelectedActivity(null);
-    document.body.style.overflow = "";
+  const handleActivityClick = (activityId) => {
+    navigate(`/blog/${activityId}`);
   };
 
   return (
@@ -132,7 +162,7 @@ const AdventureBlogPage = () => {
                   <AdventureCard
                     key={activity.id}
                     activity={activity}
-                    onActivityClick={handleActivityClick}
+                    onActivityClick={() => handleActivityClick(activity._id)}
                   />
                 ))
               ) : (
@@ -158,7 +188,10 @@ const AdventureBlogPage = () => {
           )}
 
           {/* Newsletter with Adventure Theme */}
-          <div className="mt-16 bg-white rounded-lg p-8 shadow-sm border border-gray-100 max-w-2xl mx-auto">
+          <form
+            onSubmit={handleEmailSubmit}
+            className="mt-16 bg-white rounded-lg p-8 shadow-sm border border-gray-100 max-w-2xl mx-auto"
+          >
             <div className="text-center">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
                 Get Adventure Updates
@@ -169,19 +202,62 @@ const AdventureBlogPage = () => {
               <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   type="email"
-                  placeholder="Your email address"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email"
                   className="flex-grow"
                 />
-                <Button className="whitespace-nowrap">Subscribe</Button>
+                <button
+                  type="submit"
+                  className={`bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-r-md transition duration-300 ${
+                    loading ? "opacity-75 cursor-not-allowed" : ""
+                  }`}
+                  disabled={loadingEmail}
+                  aria-label="Subscribe to newsletter"
+                >
+                  {loading ? (
+                    <span className="inline-flex items-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    "Subscribe"
+                  )}
+                </button>
               </div>
             </div>
-          </div>
+            {message.text && (
+              <p
+                className={`mt-2 text-sm ${
+                  message.type === "error" ? "text-red-400" : "text-green-400"
+                }`}
+              >
+                {message.text}
+              </p>
+            )}
+          </form>
         </div>
       </div>
-
-      {selectedActivity && (
-        <ActivityPopup activity={selectedActivity} onClose={handleClosePopup} />
-      )}
     </div>
   );
 };

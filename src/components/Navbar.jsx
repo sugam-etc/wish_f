@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaBars, FaTimes, FaPhoneAlt, FaRadiation } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { RiAdminFill } from "react-icons/ri";
 import logo from "../assets/logo.png";
 
-export default function NavbarMotionContact() {
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    setIsOpen(false); // Close menu on route change
+    setIsOpen(false);
   }, [location]);
 
   useEffect(() => {
@@ -24,61 +24,52 @@ export default function NavbarMotionContact() {
   }, []);
 
   useEffect(() => {
-    if (location.pathname === "/" && location.hash !== "#contact") {
-      window.scrollTo(0, 0);
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
     }
-  }, [location.pathname]);
+    return () => {
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
-  const isRouteActive = (path) => {
-    return location.pathname === path;
-  };
+  const isRouteActive = (path) => location.pathname === path;
+  const isContactActive = () =>
+    location.pathname === "/" && location.hash === "#contact";
 
-  const isContactActive = () => {
-    return location.pathname === "/" && location.hash === "#contact";
-  };
-
-  const handleNavClick = () => {
-    setIsOpen(false); // Close menu on link click
-  };
-
+  const handleNavClick = () => setIsOpen(false);
   const handleHomeClick = () => {
     navigate("/");
     window.scrollTo(0, 0);
-    setIsOpen(false); // Close menu on Home click
+    setIsOpen(false);
   };
-
   const handleBookNowClick = () => {
     navigate("/#contact");
     setIsOpen(false);
   };
 
-  const textColor = "text-white";
-  const buttonVariants = {
-    hover: { scale: 1.1 },
-    tap: { scale: 0.95 },
-  };
-
   return (
     <>
       <header
-        className={`fixed w-full z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-gray-900" // Scrolled state - solid dark with shadow
-            : "bg-gray-900/90 backdrop-blur-sm" // Non-scrolled - semi-transparent dark with blur
+        className={`fixed w-full z-50 h-24 ${
+          scrolled ? "bg-gray-900" : "bg-gray-900/90 backdrop-blur-sm"
         }`}
       >
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
+        <div className="container mx-auto px-4 h-full">
+          <div className="flex justify-between items-center h-full">
             <Link
               to="/"
-              className="flex items-center space-x-2"
               onClick={handleHomeClick}
+              className="flex items-center"
             >
               <img
                 src={logo}
                 alt="Site Logo"
-                className="w-16 h-12 sm:w-20 sm:h-16 text-amber-400 transition-transform hover:scale-105 object-contain"
+                className="w-16 h-12 sm:w-20 sm:h-16 object-contain hover:scale-105 transition-transform"
                 onError={(e) => {
                   e.currentTarget.src =
                     "https://placehold.co/80x64/1F2937/FFF?text=Logo";
@@ -87,25 +78,22 @@ export default function NavbarMotionContact() {
               />
             </Link>
 
-            {/* --- Desktop Navigation --- */}
             <nav className="hidden md:flex items-center space-x-4">
-              {/* Home Link */}
               <Link
                 to="/"
                 onClick={handleHomeClick}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isRouteActive("/") && location.hash !== "#contact"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isRouteActive("/") && !location.hash
                     ? "text-amber-400 bg-gray-700"
                     : "text-white hover:text-amber-400 hover:bg-gray-700/50"
                 }`}
               >
                 Home
               </Link>
-              {/* Adventures Link */}
               <Link
                 to="/adventures"
                 onClick={handleNavClick}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isRouteActive("/adventures")
                     ? "text-amber-400 bg-gray-700"
                     : "text-white hover:text-amber-400 hover:bg-gray-700/50"
@@ -113,11 +101,10 @@ export default function NavbarMotionContact() {
               >
                 Adventures
               </Link>
-              {/* About Link */}
               <Link
                 to="/about"
                 onClick={handleNavClick}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isRouteActive("/about")
                     ? "text-amber-400 bg-gray-700"
                     : "text-white hover:text-amber-400 hover:bg-gray-700/50"
@@ -125,11 +112,10 @@ export default function NavbarMotionContact() {
               >
                 About
               </Link>
-              {/* Blog Link */}
               <Link
                 to="/blog"
                 onClick={handleNavClick}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isRouteActive("/blog")
                     ? "text-amber-400 bg-gray-700"
                     : "text-white hover:text-amber-400 hover:bg-gray-700/50"
@@ -137,124 +123,120 @@ export default function NavbarMotionContact() {
               >
                 Blog
               </Link>
-              {/* Contact Link */}
               <motion.a
                 href="#contact"
                 onClick={handleBookNowClick}
-                className={`inline-flex items-center px-6 py-3 bg-transparent hover:bg-white/10 border-2 border-white rounded-lg transition text-lg ${textColor}`}
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
+                className="inline-flex items-center px-6 py-3 bg-transparent hover:bg-white/10 border-2 border-white rounded-lg text-lg text-white"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Book Now
               </motion.a>
-              {/* Call Us Button */}
               <a
                 href="/admin"
-                className="flex items-center px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-sm font-medium transition-colors shadow-md hover:shadow-lg"
+                className="flex items-center px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-sm font-medium shadow-md hover:shadow-lg"
               >
                 <RiAdminFill />
               </a>
             </nav>
 
-            {/* --- Mobile menu button --- */}
             <button
-              className="md:hidden p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="md:hidden p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
-              aria-expanded={isOpen}
             >
-              {isOpen ? (
-                <FaTimes className="h-6 w-6" />
-              ) : (
-                <FaBars className="h-6 w-6" />
-              )}
+              <FaBars className="h-6 w-6" />
             </button>
-          </div>
-
-          {/* --- Mobile Navigation Menu --- */}
-          <div
-            className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-              isOpen ? "max-h-96 mt-4 border-t border-gray-700 pt-4" : "max-h-0"
-            }`}
-          >
-            <nav className="flex flex-col space-y-2 pb-4">
-              {/* Mobile Home Link */}
-              <Link
-                to="/"
-                onClick={handleHomeClick}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isRouteActive("/") && location.hash !== "#contact"
-                    ? "text-amber-400 bg-gray-700"
-                    : "text-white hover:text-amber-400 hover:bg-gray-700"
-                }`}
-              >
-                Home
-              </Link>
-              {/* Mobile Adventures Link */}
-              <Link
-                to="/adventures"
-                onClick={handleNavClick}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isRouteActive("/adventures")
-                    ? "text-amber-400 bg-gray-700"
-                    : "text-white hover:text-amber-400 hover:bg-gray-700"
-                }`}
-              >
-                Adventures
-              </Link>
-              {/* Mobile About Link */}
-              <Link
-                to="/about"
-                onClick={handleNavClick}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isRouteActive("/about")
-                    ? "text-amber-400 bg-gray-700"
-                    : "text-white hover:text-amber-400 hover:bg-gray-700"
-                }`}
-              >
-                About
-              </Link>
-              {/* Mobile Blog Link */}
-              <Link
-                to="/blog"
-                onClick={handleNavClick}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isRouteActive("/blog")
-                    ? "text-amber-400 bg-gray-700"
-                    : "text-white hover:text-amber-400 hover:bg-gray-700"
-                }`}
-              >
-                Blog
-              </Link>
-              {/* Mobile Contact Link */}
-              <motion.a
-                href="#contact"
-                onClick={handleBookNowClick}
-                whileHover={{ scale: 1.02 }}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isContactActive()
-                    ? "text-amber-400 bg-gray-700"
-                    : "text-white hover:text-amber-400 hover:bg-gray-700"
-                }`}
-              >
-                Book Now
-              </motion.a>
-              {/* Mobile Call Us Button */}
-              <a
-                href="/admin"
-                className="flex items-center justify-center px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-base font-medium mt-3 transition-colors shadow-md"
-              >
-                <RiAdminFill />
-              </a>
-            </nav>
           </div>
         </div>
       </header>
-      {/* Add a div with a top margin to prevent overlap */}
-      <div style={{ paddingTop: "60px" }}>
-        {/* The rest of your page content will go here */}
-      </div>
+
+      {/* Fixed Mobile Menu with full-screen background */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm">
+          {/* Close button positioned absolutely at the top right */}
+          <button
+            className="absolute top-6 right-4 p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 z-50"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
+          >
+            <FaTimes className="h-6 w-6" />
+          </button>
+
+          <div className="pt-24 h-full w-full overflow-y-auto">
+            <nav className="flex flex-col h-full px-6 py-8 space-y-6">
+              <Link
+                to="/"
+                onClick={handleHomeClick}
+                className={`px-6 py-4 rounded-lg text-xl font-medium text-center ${
+                  isRouteActive("/")
+                    ? "text-amber-400 bg-gray-700/50"
+                    : "text-white hover:text-amber-400 hover:bg-gray-700/30"
+                }`}
+              >
+                Home
+              </Link>
+              <Link
+                to="/adventures"
+                onClick={handleNavClick}
+                className={`px-6 py-4 rounded-lg text-xl font-medium text-center ${
+                  isRouteActive("/adventures")
+                    ? "text-amber-400 bg-gray-700/50"
+                    : "text-white hover:text-amber-400 hover:bg-gray-700/30"
+                }`}
+              >
+                Adventures
+              </Link>
+              <Link
+                to="/about"
+                onClick={handleNavClick}
+                className={`px-6 py-4 rounded-lg text-xl font-medium text-center ${
+                  isRouteActive("/about")
+                    ? "text-amber-400 bg-gray-700/50"
+                    : "text-white hover:text-amber-400 hover:bg-gray-700/30"
+                }`}
+              >
+                About
+              </Link>
+              <Link
+                to="/blog"
+                onClick={handleNavClick}
+                className={`px-6 py-4 rounded-lg text-xl font-medium text-center ${
+                  isRouteActive("/blog")
+                    ? "text-amber-400 bg-gray-700/50"
+                    : "text-white hover:text-amber-400 hover:bg-gray-700/30"
+                }`}
+              >
+                Blog
+              </Link>
+              <motion.a
+                href="#contact"
+                onClick={handleBookNowClick}
+                className={`px-6 py-4 rounded-lg text-xl font-medium text-center ${
+                  isContactActive()
+                    ? "text-amber-400 bg-gray-700/50"
+                    : "text-white hover:text-amber-400 hover:bg-gray-700/30"
+                }`}
+                whileHover={{ scale: 1.02 }}
+              >
+                Book Now
+              </motion.a>
+              <div className="mt-auto pt-8">
+                <a
+                  href="/admin"
+                  className="flex items-center justify-center px-6 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xl font-medium"
+                >
+                  <RiAdminFill className="mr-3" />
+                  Admin Panel
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Spacer for navbar height */}
+      <div className="h-24"></div>
     </>
   );
 }

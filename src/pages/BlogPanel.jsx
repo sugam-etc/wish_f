@@ -1,8 +1,7 @@
 // src/components/BlogAdminPanel.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../App";
-// Change port if needed
+import { BACKEND_URL } from "../config/backend";
 
 const BlogAdminPanel = () => {
   const [blogs, setBlogs] = useState([]);

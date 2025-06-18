@@ -180,15 +180,12 @@ export default function Hero() {
             className="flex flex-wrap gap-4 justify-center"
             variants={itemVariants}
           >
-            <motion.a
-              href="#services"
+            <a
+              href="/gallery"
               className="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-gray-900 font-medium rounded-lg transition text-lg"
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
             >
-              Our Services <FaArrowRight className="ml-2" />
-            </motion.a>
+              Our Gallery <FaArrowRight className="ml-2" />
+            </a>
             <motion.a
               href="#contact"
               className={`inline-flex items-center px-6 py-3 bg-transparent hover:bg-white/10 border-2 border-white rounded-lg transition text-lg ${textColor}`}

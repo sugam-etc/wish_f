@@ -3,7 +3,7 @@ import AdventureCard from "../components/AdventureCard.jsx";
 import { FaSearch, FaFilter, FaMapMarkerAlt } from "react-icons/fa";
 import axios from "axios";
 
-import { BACKEND_URL } from "../App.jsx";
+import { BACKEND_URL } from "../config/backend.js";
 export default function Adventures() {
   // States
   const [adventures, setAdventures] = useState([]);
@@ -13,7 +13,9 @@ export default function Adventures() {
   const [locationFilter, setLocationFilter] = useState("All Locations");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   // Fetch adventures from backend
   useEffect(() => {
     const fetchAdventures = async () => {

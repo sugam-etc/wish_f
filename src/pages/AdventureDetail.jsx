@@ -8,17 +8,21 @@ import {
   FaGlobe,
   FaStar,
 } from "react-icons/fa";
-import { BACKEND_URL } from "../App";
+import { BACKEND_URL } from "../config/backend";
 export default function AdventureDetail() {
   const { id } = useParams();
   const [adventure, setAdventure] = useState(null);
   const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     async function fetchAdventure() {
       try {
         const res = await axios.get(`${BACKEND_URL}/api/adventures/${id}`);
         setAdventure(res.data);
+        console.log(res.data);
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch adventure:", err);
@@ -31,7 +35,7 @@ export default function AdventureDetail() {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-xl">
+      <div className="min-h-[60vh] flex items-center justify-center text-lg text-gray-600">
         Loading adventure details...
       </div>
     );
@@ -39,28 +43,37 @@ export default function AdventureDetail() {
 
   if (!adventure) {
     return (
-      <div className="p-8 text-center text-red-600 text-xl">
+      <div className="min-h-[60vh] flex items-center justify-center text-xl font-semibold text-red-600">
         Adventure not found.
       </div>
     );
   }
 
   return (
-    <section className="py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div>
+    <section className="py-12 bg-white">
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
+        {/* Top Section */}
+        <div className="grid md:grid-cols-2 gap-10 items-start">
+          {/* Image */}
+          <div className="w-full aspect-video md:aspect-[4/3] rounded-xl overflow-hidden shadow-md">
             <img
-              src={`${adventure.image}`}
+              src={
+                adventure.image.startsWith("http")
+                  ? adventure.image
+                  : `${BACKEND_URL}${adventure.image}`
+              }
               alt={adventure.name}
-              className="w-full h-auto rounded-lg shadow-lg"
+              className="w-full h-full object-cover object-center"
             />
           </div>
 
-          <div>
-            <h1 className="text-3xl font-bold mb-4">{adventure.name}</h1>
+          {/* Content */}
+          <div className="space-y-5">
+            <h1 className="text-3xl md:text-4xl font-semibold text-gray-800">
+              {adventure.name}
+            </h1>
 
-            <div className="flex items-center mb-4">
+            <div className="flex items-center text-sm text-gray-600">
               {[...Array(5)].map((_, i) => (
                 <FaStar
                   key={i}
@@ -68,65 +81,62 @@ export default function AdventureDetail() {
                     i < Math.floor(adventure.rating)
                       ? "text-amber-400"
                       : "text-gray-300"
-                  }`}
+                  } mr-1`}
                 />
               ))}
-              <span className="ml-2 text-gray-600">
+              <span className="ml-2">
                 {adventure.rating} ({Math.floor(Math.random() * 100) + 20}{" "}
                 reviews)
               </span>
             </div>
 
-            <p className="text-gray-700 mb-6">{adventure.shortDescription}</p>
+            <p className="text-gray-700 leading-relaxed">
+              {adventure.shortDescription}
+            </p>
 
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center">
-                <FaMapMarkerAlt className="text-gray-500 mr-2" />
+            <div className="grid gap-3 text-gray-600 text-sm">
+              <div className="flex items-center gap-2">
+                <FaMapMarkerAlt className="text-gray-500" />
                 <span>{adventure.location}</span>
               </div>
-
-              <div className="flex items-center">
-                <FaClock className="text-gray-500 mr-2" />
+              <div className="flex items-center gap-2">
+                <FaClock className="text-gray-500" />
                 <span>{adventure.hours}</span>
               </div>
-
-              <div className="flex items-center">
-                <FaPhone className="text-gray-500 mr-2" />
+              <div className="flex items-center gap-2">
+                <FaPhone className="text-gray-500" />
                 <span>
                   +977 {Math.floor(1000000000 + Math.random() * 9000000000)}
                 </span>
               </div>
-
-              <div className="flex items-center">
-                <FaGlobe className="text-gray-500 mr-2" />
-                <a href="#" className="text-amber-600 hover:underline">
+              <div className="flex items-center gap-2">
+                <FaGlobe className="text-gray-500" />
+                <a
+                  href="#"
+                  className="text-amber-600 hover:underline hover:text-amber-700"
+                >
                   Visit Website
                 </a>
               </div>
             </div>
 
-            <button className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-gray-900 font-medium rounded-lg transition">
+            <button className="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition shadow-sm">
               Contact for Booking
             </button>
           </div>
         </div>
 
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">About {adventure.name}</h2>
-          <p className="text-gray-700 mb-4">
-            {adventure.name} is one of the premier adventure organizations in
-            Nepal, offering top-quality experiences for both beginners and
-            experienced adventurers. With a focus on safety, professionalism,
-            and environmental responsibility, they provide unforgettable
-            experiences in some of the most beautiful locations in the
-            Himalayas.
-          </p>
-          <p className="text-gray-700">
-            Whether you're looking for a short introductory session or a
-            multi-day expedition, {adventure.name} has options to suit all
-            interests and skill levels. Their experienced guides and instructors
-            are certified and have extensive knowledge of the local terrain and
-            conditions.
+        {/* About Section */}
+        <div className="mt-16 max-w-4xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4">
+            About {adventure.name}
+          </h2>
+          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+            {adventure.about?.trim()
+              ? adventure.about
+              : `${adventure.name} is one of the premier adventure organizations in Nepal, offering top-quality experiences for both beginners and experienced adventurers. With a focus on safety, professionalism, and environmental responsibility, they provide unforgettable experiences in some of the most beautiful locations in the Himalayas.
+
+Whether you're looking for a short introductory session or a multi-day expedition, ${adventure.name} has options to suit all interests and skill levels. Their experienced guides and instructors are certified and have extensive knowledge of the local terrain and conditions.`}
           </p>
         </div>
       </div>

@@ -1,13 +1,15 @@
+import { BACKEND_URL } from "../config/backend";
+
 export const AdventureCard = ({ activity, onActivityClick }) => {
   // Get the first image from the images array, fallback to a default image if necessary
   const imageUrl = activity.images?.[0]?.startsWith("http")
     ? activity.images[0]
-    : `http://localhost:5000${activity.images?.[0] || "/default-image.jpg"}`;
+    : `${BACKEND_URL}${activity.images?.[0] || "/default-image.jpg"}`;
 
   return (
     <div
       className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-100 group"
-      onClick={() => onActivityClick(activity)}
+      onClick={() => onActivityClick(activity._id)}
     >
       <div className="h-48 overflow-hidden relative">
         <img

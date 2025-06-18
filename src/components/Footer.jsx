@@ -1,7 +1,70 @@
-import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { useState } from "react";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 import logo from "../assets/logo.png";
+import { Link, useNavigate } from "react-router-dom";
+import { createEmail } from "../api/emailService";
 
 export default function Footer() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      setMessage({ text: "Please enter your email", type: "error" });
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setMessage({ text: "Please enter a valid email address", type: "error" });
+      return;
+    }
+
+    setLoading(true);
+    setMessage({ text: "", type: "" });
+
+    try {
+      await createEmail({ title: email });
+      setMessage({
+        text: "Thank you for subscribing!",
+        type: "success",
+      });
+      setEmail("");
+    } catch (error) {
+      setMessage({
+        text: error.message || "Subscription service is currently unavailable",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleContactClick = () => {
+    if (window.location.pathname === "/") {
+      const contactSection = document.getElementById("contact");
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/#contact");
+      setTimeout(() => {
+        const contactSection = document.getElementById("contact");
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  };
+
   return (
     <footer className="bg-gray-800 text-white py-12">
       <div className="container mx-auto px-4">
@@ -25,7 +88,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="#"
+                  href="/"
                   className="text-gray-400 hover:text-amber-400 transition duration-300 flex items-center"
                 >
                   <span className="hover:underline">Home</span>
@@ -33,7 +96,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/adventures"
                   className="text-gray-400 hover:text-amber-400 transition duration-300 flex items-center"
                 >
                   <span className="hover:underline">Adventures</span>
@@ -41,18 +104,27 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/about"
                   className="text-gray-400 hover:text-amber-400 transition duration-300 flex items-center"
                 >
                   <span className="hover:underline">About</span>
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/#contact"
+                  onClick={handleContactClick}
                   className="text-gray-400 hover:text-amber-400 transition duration-300 flex items-center"
                 >
                   <span className="hover:underline">Contact</span>
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="/gallery"
+                  className="text-gray-400 hover:text-amber-400 transition duration-300 flex items-center"
+                >
+                  <span className="hover:underline">Gallery</span>
                 </a>
               </li>
             </ul>
@@ -142,38 +214,67 @@ export default function Footer() {
               >
                 <FaInstagram size={22} />
               </a>
-              {/* Uncomment when you have these social links
-              <a
-                href="#"
-                className="text-gray-400 hover:text-amber-400 transition duration-300"
-                aria-label="Twitter"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaTwitter size={22} />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-amber-400 transition duration-300"
-                aria-label="YouTube"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaYoutube size={22} />
-              </a> */}
             </div>
 
             <h4 className="font-semibold text-lg mb-4">Newsletter</h4>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 w-full rounded-l-md focus:outline-none focus:ring-2 focus:ring-amber-400 text-gray-800"
-              />
-              <button className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-r-md transition duration-300">
-                Subscribe
-              </button>
-            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="flex">
+                <input
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email"
+                  className="px-4 py-2 w-full rounded-l-md border border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400 text-white"
+                  disabled={loading}
+                />
+                <button
+                  type="submit"
+                  className={`bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-r-md transition duration-300 ${
+                    loading ? "opacity-75 cursor-not-allowed" : ""
+                  }`}
+                  disabled={loading}
+                  aria-label="Subscribe to newsletter"
+                >
+                  {loading ? (
+                    <span className="inline-flex items-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    "Subscribe"
+                  )}
+                </button>
+              </div>
+              {message.text && (
+                <p
+                  className={`mt-2 text-sm ${
+                    message.type === "error" ? "text-red-400" : "text-green-400"
+                  }`}
+                >
+                  {message.text}
+                </p>
+              )}
+            </form>
           </div>
         </div>
 

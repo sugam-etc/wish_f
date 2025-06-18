@@ -9,33 +9,71 @@ import BlogPage from "./pages/BlogPage.jsx";
 import { AuthProvider } from "../Authentication/AuthContext.jsx";
 
 import AdminPage from "./components/AdminPage.jsx";
-import ProtectedRoute from "./Authentication/ProtectedRoute.jsx";
-import LoginPage from "./Authentication/LoginPage.jsx";
-export const BACKEND_URL = "https://wishadventurenepal.com";
+import PrivateRoute from "../Authentication/PrivateRoute.jsx";
+import LoginPage from "../Authentication/Login.jsx";
+import GalleryPage from "./pages/Gallery/GalleryPage.jsx";
+import AlbumForm from "./pages/Gallery/AlbumForm.jsx";
+import AdventureForm from "./components/AdventureForm.jsx";
+import { EventForm } from "./components/EventForm.jsx";
+import { BlogForm } from "./components/BlogForm.jsx";
+import { BlogPostPage } from "./BlogComponents/ActivityPopup.jsx";
+
 function App() {
   return (
     <AuthProvider>
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow">
+        <main className="flex-grow gap-4">
           <Routes>
+            {/* Public routes */}
             <Route index={true} element={<Home />} />
             <Route path="/about" element={<About />} />
-            {/* <Route path="/admin" element={<AdminPage />} /> */}
             <Route path="/adventures" element={<Adventures />} />
-            {/* <Route path="/admin" element={<BlogAdminPanel />} /> */}
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/adventures/:id" element={<AdventureDetail />} />
-            {/* <Route path="/admin" element={<AdminPage />} /> */}
-
-            {/* ✅ NEW */}
+            <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/login" element={<LoginPage />} />
+
+            {/* Protected admin routes */}
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <PrivateRoute roles={["admin"]}>
                   <AdminPage />
-                </ProtectedRoute>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/gallery-form"
+              element={
+                <PrivateRoute roles={["admin"]}>
+                  <AlbumForm />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/adventureform/:id?"
+              element={
+                <PrivateRoute roles={["admin"]}>
+                  <AdventureForm />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/blogform/:id?"
+              element={
+                <PrivateRoute roles={["admin"]}>
+                  <BlogForm />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/eventform/:id?"
+              element={
+                <PrivateRoute roles={["admin"]}>
+                  <EventForm />
+                </PrivateRoute>
               }
             />
           </Routes>
