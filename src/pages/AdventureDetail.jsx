@@ -112,7 +112,7 @@ export default function AdventureDetail() {
               <div className="flex items-center gap-2">
                 <FaGlobe className="text-gray-500" />
                 <a
-                  href="#"
+                  href={`${adventure.contact.website}`}
                   className="text-amber-600 hover:underline hover:text-amber-700"
                 >
                   Visit Website

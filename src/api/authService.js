@@ -24,19 +24,19 @@ const handleResponse = async (response) => {
 
 /**
  * Sends a POST request for admin login.
- * @param {string} username - The admin username.
+ * @param {string} email - The admin username.
  * @param {string} password - The admin password.
  * @returns {Promise<object>} - A promise that resolves with the login response data (e.g., user info and token).
  */
-export const adminLogin = async (username, password) => {
+export const adminLogin = async (email, password) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/admin/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/users/loginadmin`, {
       method: "POST", // Specify POST method for login
       headers: {
         "Content-Type": "application/json", // Indicate that the request body is JSON
       },
       // Convert username and password object to a JSON string for the request body
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
     // Handle the response (check for errors, parse JSON)
     return await handleResponse(response);

@@ -127,6 +127,22 @@ export default function Footer() {
                   <span className="hover:underline">Gallery</span>
                 </a>
               </li>
+              <li>
+                <a
+                  href="/membership"
+                  className="text-gray-400 hover:text-amber-400 transition duration-300 flex items-center"
+                >
+                  <span className="hover:underline">Buy Membership</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/store"
+                  className="text-gray-400 hover:text-amber-400 transition duration-300 flex items-center"
+                >
+                  <span className="hover:underline">Our Gear Store</span>
+                </a>
+              </li>
             </ul>
           </div>
 

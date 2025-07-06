@@ -2,10 +2,13 @@ import { BACKEND_URL } from "../config/backend";
 
 export const AdventureCard = ({ activity, onActivityClick }) => {
   // Get the first image from the images array, fallback to a default image if necessary
+
   const imageUrl = activity.images?.[0]?.startsWith("http")
     ? activity.images[0]
     : `${BACKEND_URL}${activity.images?.[0] || "/default-image.jpg"}`;
 
+  console.log("Imageurl", imageUrl);
+  console.log(activity);
   return (
     <div
       className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-100 group"

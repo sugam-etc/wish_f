@@ -13,6 +13,9 @@ const DashboardList = ({ data = [], onDelete, type }) => {
         return `${BACKEND_URL}${item.image}` || null;
       case "event":
         return `${BACKEND_URL}${item.image}` || null;
+      case "item":
+        return item?.image ? `${BACKEND_URL}/${item.image}` : null;
+
       case "album":
         if (typeof item.coverImage === "string") {
           return `${BACKEND_URL}${item.coverImage.path}`;

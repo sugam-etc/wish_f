@@ -10,6 +10,7 @@ import TeamMember from "../components/TeamMember.jsx";
 import ServiceModal from "../components/ServiceModal.jsx";
 import outdoor from "../assets/Images/outdoor.jpeg";
 import { useNavigate } from "react-router-dom";
+import GallerySection from "../components/GallerySection.jsx";
 import axios from "axios";
 import {
   FaCalendarAlt,
@@ -73,11 +74,15 @@ const services = [
 export default function Home() {
   const [selectedService, setSelectedService] = useState(null);
   const [featuredEvents, setFeaturedEvents] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const navigate = useNavigate();
 
   const fetchEvents = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/events`);
+      const res = await axios.get(`${BACKEND_URL}/api/albums`);
+      console.log(res.data.data);
+      setAlbums(res.data.data);
       // Sort events newest first
       const sortedEvents = response.data.sort(
         (a, b) => new Date(b.date) - new Date(a.date)
@@ -283,6 +288,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <GallerySection albums={albums} />
 
       {/* Team Section */}
       <section className="py-16 bg-gray-50">

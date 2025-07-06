@@ -13,3 +13,56 @@
   font-weight: 400;
   font-style: normal;
 }
+/* purchase.css */
+.purchase-form {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.purchase-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.purchase-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.purchase-form input[type="text"],
+.purchase-form input[type="email"],
+.purchase-form input[type="file"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.purchase-dashboard {
+  padding: 2rem;
+}
+
+.purchase-dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.purchase-dashboard th,
+.purchase-dashboard td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.purchase-dashboard th {
+  background-color: #f5f5f5;
+}
+
+.purchase-dashboard .badge {
+  padding: 0.35rem 0.65rem;
+  border-radius: 50rem;
+}

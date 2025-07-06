@@ -7,7 +7,6 @@ import {
   FaClock,
 } from "react-icons/fa";
 import { GrGallery } from "react-icons/gr";
-
 import { Button } from "./Button";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -20,14 +19,18 @@ import axios from "axios";
 
 export const BlogPostPage = () => {
   const navigate = useNavigate();
+
   const { id } = useParams();
   const [activity, setActivity] = useState(null);
   const [latestInfo, setLatestInfo] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [infoError, setInfoError] = useState(null); // Separate error state for latest info
+  const currentUrl = encodeURIComponent(window.location.href);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   useEffect(() => {
     const fetchActivity = async () => {
       try {
@@ -43,10 +46,17 @@ export const BlogPostPage = () => {
     const fetchLatestInfo = async () => {
       try {
         const data = await getLatestInfo();
-        setLatestInfo(data);
+        if (data) {
+          setLatestInfo(data);
+          setInfoError(null);
+        } else {
+          setLatestInfo(null);
+          setInfoError("No updates available");
+        }
       } catch (err) {
-        setError(err.message);
         setLatestInfo(null);
+        setInfoError("Could not load updates");
+        console.error("Error fetching latest info:", err);
       }
     };
 
@@ -153,7 +163,6 @@ export const BlogPostPage = () => {
               <span>
                 <FaClock /> {activity.readTime}
               </span>
-              {activity.author && <span>✍️ By {activity.author}</span>}
             </div>
           </div>
         </div>
@@ -210,28 +219,43 @@ export const BlogPostPage = () => {
 
         {/* Sidebar (1/3 width) */}
         <aside className="lg:col-span-1 space-y-6">
-          {/* Latest Info Box */}
-          {latestInfo && (
-            <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
-              <div className="flex items-center gap-2 mb-3">
-                <FaInfoCircle className="text-blue-500 text-xl" />
-                <h3 className="text-lg font-semibold text-blue-800">
-                  Latest Update
-                </h3>
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-medium text-blue-700">
-                  {latestInfo.title}
-                </h4>
-                <p className="text-sm text-blue-600">{latestInfo.content}</p>
-                {latestInfo.date && (
-                  <p className="text-xs text-blue-500 mt-2">
-                    Posted on: {new Date(latestInfo.date).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
+          {/* Latest Info Box - Always rendered */}
+          <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-2 mb-3">
+              <FaInfoCircle className="text-blue-500 text-xl" />
+              <h3 className="text-lg font-semibold text-blue-800">
+                Latest Update
+              </h3>
             </div>
-          )}
+            <div className="space-y-2">
+              {latestInfo ? (
+                <>
+                  <h4 className="font-medium text-blue-700">
+                    {latestInfo.title}
+                  </h4>
+                  <p className="text-sm text-blue-600">{latestInfo.content}</p>
+                  {latestInfo.date && (
+                    <p className="text-xs text-blue-500 mt-2">
+                      Posted on:{" "}
+                      {new Date(latestInfo.date).toLocaleDateString()}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-blue-600 italic">
+                  {infoError || "No updates available"}
+                </p>
+              )}
+              {infoError && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="text-xs text-blue-600 underline mt-1"
+                >
+                  Try again
+                </button>
+              )}
+            </div>
+          </div>
 
           {/* Highlights box */}
           <div
@@ -276,7 +300,7 @@ export const BlogPostPage = () => {
             </ul>
           </div>
 
-          {/* Key details */}
+          {/* Gallery box */}
           <div
             className="bg-gray-50 p-5 rounded-lg border border-gray-200 cursor-pointer hover:shadow-xl"
             onClick={() => navigate("/gallery")}
@@ -285,7 +309,6 @@ export const BlogPostPage = () => {
               <GrGallery />
               View Gallery
             </h3>
-            {/* <div className="space-y-4"></div> */}
           </div>
 
           {/* CTA Button */}
@@ -299,7 +322,15 @@ export const BlogPostPage = () => {
               Share This Adventure
             </h3>
             <div className="flex justify-center space-x-4">
-              <button className="text-gray-600 hover:text-blue-600 transition-colors p-2 rounded-full bg-gray-100 hover:bg-blue-50">
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+                    "_blank"
+                  )
+                }
+                className="text-gray-600 hover:text-blue-600 transition-colors p-2 rounded-full bg-gray-100 hover:bg-blue-50"
+              >
                 <span className="sr-only">Facebook</span>
                 <FaFacebookF className="h-5 w-5" />
               </button>

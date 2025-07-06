@@ -16,6 +16,7 @@
     "@portabletext/react": "^3.2.1",
     "@sanity/client": "^6.29.0",
     "@tailwindcss/vite": "^4.0.17",
+    "antd": "^5.26.1",
     "axios": "^1.8.4",
     "framer-motion": "^12.6.2",
     "lucide-react": "^0.503.0",
@@ -26,8 +27,9 @@
     "react-router-hash-link": "^2.4.3",
     "react-simple-typewriter": "^5.0.1",
     "react-slick": "^0.30.3",
+    "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
-    "swiper": "^11.2.6",
+    "swiper": "^11.2.8",
     "tailwindcss": "^4.0.17"
   },
   "devDependencies": {

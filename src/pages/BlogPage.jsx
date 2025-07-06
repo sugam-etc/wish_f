@@ -160,7 +160,7 @@ const AdventureBlogPage = () => {
               {filteredActivities.length > 0 ? (
                 filteredActivities.map((activity) => (
                   <AdventureCard
-                    key={activity.id}
+                    key={activity._id}
                     activity={activity}
                     onActivityClick={() => handleActivityClick(activity._id)}
                   />
